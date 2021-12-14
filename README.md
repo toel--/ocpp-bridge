@@ -5,7 +5,7 @@ a simple java application that relays the OCPP messages and output then in clear
 
 Usefull if you need to see the OCPP messages between the charge point and the central system.
 
-
+```
 Start the ocpp-bridge with 2 parameters:
   java -jar OcppBridge.jar [port] [url]
 where
@@ -14,5 +14,4 @@ where
   
   Then configure your charge point to connect to the bridge ip and port:
     ws://[IP]:[port]/ocpp
-    
-    
+```
