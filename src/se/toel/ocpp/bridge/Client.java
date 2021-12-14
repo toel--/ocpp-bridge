@@ -50,18 +50,18 @@ public class Client extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake handshake) {
-        Dev.info("                 connection to backend opened");
+        Dev.info("                 connection to central system opened");
     }
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        Dev.info("                 connection to backend closed: "+reason);
+        Dev.info("                 connection to central system closed by "+(remote ? "central system" : "charge point")+" "+reason);
         serverConnection.close();
     }
 
     @Override
     public void onError(Exception ex) {
-        Dev.error("                 client error", ex);
+        Dev.error("                 error on connection to central system", ex);
     }
 
     /***************************************************************************

@@ -38,11 +38,22 @@ public class Server extends WebSocketServer {
      /***************************************************************************
      * Public methods
      **************************************************************************/
+    
+    public void shutdown() {
+        try {
+            this.stop();
+        } catch (Exception e) {}
+        
+        for (Client client : connections.values()) {
+            client.close();
+        }
+    }
+    
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         
         String deviceId = getDeviceId(conn.getResourceDescriptor());
-        Dev.info(deviceId+" connect");
+        Dev.info(deviceId+" connect from "+conn.getRemoteSocketAddress().getHostString()+":"+conn.getRemoteSocketAddress().getPort());
         String url = targetUrl.toString()+"/"+deviceId;
         try {
             Client client = new Client(new URI(url));
@@ -59,7 +70,8 @@ public class Server extends WebSocketServer {
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         
         String deviceId = getDeviceId(conn.getResourceDescriptor());
-        Dev.info(deviceId+" disconnect "+(remote ? "by client side" : "by backend side"));
+        Dev.info(deviceId+" disconnected "+(remote ? "by charge point" : "by central system"));
+        System.out.println();
         Client client = connections.get(conn);
         client.close();
         connections.remove(conn);
@@ -72,6 +84,7 @@ public class Server extends WebSocketServer {
         String deviceId = getDeviceId(conn.getResourceDescriptor());
         Dev.info(deviceId+" "+message);
         Client client = connections.get(conn);
+        while (!client.isOpen()) Dev.sleep(10);
         client.send(message);
     }
 
@@ -82,6 +95,7 @@ public class Server extends WebSocketServer {
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
+        Dev.error("                 error on connection to charge point", ex);
         ex.printStackTrace();
         if (conn != null) {
             // some errors like port binding failed may not be assignable to a specific websocket

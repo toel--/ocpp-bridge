@@ -42,6 +42,7 @@ public class Application {
         try {
         
             System.out.println("starting server on port: " + port);
+            System.out.println("  will be forwarding websocket connections to " + url);
             Server server = new Server(port, url);
             server.start();
             System.out.println(" done");
@@ -50,8 +51,9 @@ public class Application {
                 Dev.sleep(100);
             }
             
-            server.stop(1000);
-            
+            server.shutdown();
+            Dev.sleep(1000);
+            System.exit(0);
             
         
         } catch (Exception e) {
