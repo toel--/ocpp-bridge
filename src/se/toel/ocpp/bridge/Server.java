@@ -40,19 +40,24 @@ public class Server extends WebSocketServer {
      **************************************************************************/
     
     public void shutdown() {
+        
+        for (Map.Entry<WebSocket, Client> connection : connections.entrySet()) {
+            connection.getKey().close();
+            connection.getValue().close();
+        }
+        
         try {
             this.stop();
         } catch (Exception e) {}
         
-        for (Client client : connections.values()) {
-            client.close();
-        }
+        
     }
     
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        
+                
         String deviceId = getDeviceId(conn.getResourceDescriptor());
+        System.err.println("");
         Dev.info(deviceId+" connect from "+conn.getRemoteSocketAddress().getHostString()+":"+conn.getRemoteSocketAddress().getPort());
         String url = targetUrl.toString()+"/"+deviceId;
         try {
@@ -68,10 +73,9 @@ public class Server extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        
+                
         String deviceId = getDeviceId(conn.getResourceDescriptor());
         Dev.info(deviceId+" disconnected "+(remote ? "by charge point" : "by central system"));
-        System.out.println();
         Client client = connections.get(conn);
         client.close();
         connections.remove(conn);

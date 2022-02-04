@@ -29,6 +29,7 @@ public class Client extends WebSocketClient {
      **************************************************************************/
     public Client(URI uri) {
         super(uri);
+        addHeader("Sec-WebSocket-Protocol", "ocpp1.6");
     }
     
     

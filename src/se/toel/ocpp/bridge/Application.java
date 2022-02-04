@@ -67,6 +67,7 @@ public class Application {
     
     public static void shutdown() {
         
+        Dev.info("Shuting down...");
         running = false;
         
     }
