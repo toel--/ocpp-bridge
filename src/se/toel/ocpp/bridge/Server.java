@@ -61,7 +61,7 @@ public class Server extends WebSocketServer {
         Dev.info(deviceId+" connect from "+conn.getRemoteSocketAddress().getHostString()+":"+conn.getRemoteSocketAddress().getPort());
         String url = targetUrl.toString()+"/"+deviceId;
         try {
-            Client client = new Client(new URI(url));
+            Client client = new Client(new URI(url), handshake);
             connections.put(conn, client);
             client.setServerConnection(conn);
             client.connect();
