@@ -5,6 +5,7 @@
 package se.toel.ocpp.bridge;
 
 import java.net.URI;
+import java.util.Map;
 import se.toel.util.Dev;
 
 /**
@@ -26,7 +27,7 @@ public class Application {
      * Public methods
      **************************************************************************/
     
-    public void execute(int port, URI url) {
+    public void execute(int port, URI url, Map<String, String> idMap) {
         
         // Shutdown hook to close the db connection
         Runtime.getRuntime().addShutdownHook( new Thread (  )  {  
@@ -43,7 +44,7 @@ public class Application {
         
             System.out.println("starting server on port: " + port);
             System.out.println("  will be forwarding websocket connections to " + url);
-            Server server = new Server(port, url);
+            Server server = new Server(port, url, idMap);
             server.start();
             System.out.println(" done");
 

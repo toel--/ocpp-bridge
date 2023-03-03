@@ -26,13 +26,15 @@ public class Server extends WebSocketServer {
      **************************************************************************/
     URI targetUrl = null;
     Map<WebSocket, Client> connections = new HashMap<>();
+    Map<String, String> idMap;
     
      /***************************************************************************
      * Constructor
      **************************************************************************/
-    public Server(int port, URI targetUrl) throws UnknownHostException {
+    public Server(int port, URI targetUrl, Map<String, String> idMap) throws UnknownHostException {
         super(new InetSocketAddress(port));
         this.targetUrl = targetUrl;
+        this.idMap = idMap;
     }
 
      /***************************************************************************
@@ -59,6 +61,12 @@ public class Server extends WebSocketServer {
         String deviceId = getDeviceId(conn.getResourceDescriptor());
         System.err.println("");
         Dev.info(deviceId+" connect from "+conn.getRemoteSocketAddress().getHostString()+":"+conn.getRemoteSocketAddress().getPort());
+        
+        if (idMap.containsKey(deviceId)) {
+            deviceId = idMap.get(deviceId);
+            System.out.println("  using id mapping as "+deviceId);
+        }
+        
         String url = targetUrl.toString()+"/"+deviceId;
         try {
             Client client = new Client(new URI(url), handshake);
@@ -77,8 +85,10 @@ public class Server extends WebSocketServer {
         String deviceId = getDeviceId(conn.getResourceDescriptor());
         Dev.info(deviceId+" disconnected "+(remote ? "by charge point" : "by central system"));
         Client client = connections.get(conn);
-        client.close();
-        connections.remove(conn);
+        if (client!=null) {
+            client.close();
+            connections.remove(conn);
+        }
         
     }
 

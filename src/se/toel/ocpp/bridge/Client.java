@@ -12,6 +12,7 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.toel.util.Dev;
+import se.toel.util.StringUtil;
 
 /**
  *
@@ -38,7 +39,15 @@ public class Client extends WebSocketClient {
         String[] keys = new String[]{"Authorization", "Sec-WebSocket-Protocol", "User-Agent"};
         for (String key : keys) {
             String value = handshake.getFieldValue(key);
-            if (value!=null) addHeader(key, value);
+            if (value!=null) {
+                System.out.println("   forwarding header "+key+": "+value);
+                if (key.equals("Authorization")) {
+                    String s = value.replace("Basic ", "");
+                    s = StringUtil.base64decode(s);
+                    System.out.println("                 "+s);
+                }
+                addHeader(key, value);
+            }
         }
         
     }
